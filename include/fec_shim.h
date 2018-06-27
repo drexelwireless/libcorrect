@@ -3,7 +3,7 @@
 // libcorrect's libfec shim header
 // this is a partial implementation of libfec
 // header signatures derived from found usages of libfec -- some things may be different
-#include <correct.h>
+#include <correct-sse.h>
 
 // Reed-Solomon
 void *init_rs_char(int symbol_size, int primitive_polynomial, int first_consecutive_root,

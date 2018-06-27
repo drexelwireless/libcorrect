@@ -60,7 +60,7 @@ void decode_rs_char(void *rs, unsigned char *block, int *erasure_locations,
 }
 
 typedef struct {
-    correct_convolutional *conv;
+    correct_convolutional_sse *conv;
     unsigned int rate;
     unsigned int order;
     uint8_t *buf;
@@ -93,7 +93,7 @@ static void *create_viterbi(unsigned int num_decoded_bits, unsigned int rate,
     shim->order = order;
     shim->buf = malloc(num_decoded_bytes);
     shim->buf_len = num_decoded_bytes;
-    shim->conv = correct_convolutional_create(rate, order, poly);
+    shim->conv = correct_convolutional_sse_create(rate, order, poly);
     shim->read_iter = shim->buf;
     shim->write_iter = shim->buf;
 
@@ -103,7 +103,7 @@ static void *create_viterbi(unsigned int num_decoded_bits, unsigned int rate,
 static void delete_viterbi(void *vit) {
     convolutional_shim *shim = (convolutional_shim *)vit;
     free(shim->buf);
-    correct_convolutional_destroy(shim->conv);
+    correct_convolutional_sse_destroy(shim->conv);
     free(shim);
 }
 
@@ -131,7 +131,7 @@ static void update_viterbi_blk(void *vit, const unsigned char *encoded_soft,
 
     // what if n_write_bits isn't a multiple of 8?
     // libcorrect can't start and stop at arbitrary indices...
-    correct_convolutional_decode_soft(
+    correct_convolutional_sse_decode_soft(
         shim->conv, encoded_soft, num_encoded_groups * shim->rate, shim->write_iter);
     shim->write_iter += n_write_bits / 8;
 }
